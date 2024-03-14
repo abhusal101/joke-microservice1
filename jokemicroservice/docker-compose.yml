@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  mysqldb:
+    build: ./database
+    container_name: mysqldb_container
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: jokesdb
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  nodeapp:
+    build: .
+    container_name: joke_application
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysqldb
+
+volumes:
+  db_data:

@@ -1,14 +1,13 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
-//const dotenv = require('dotenv');
-
-const PORT = process.env.PORT || 3000;
-const app = express();
 const path = require('path');
 
 // Load environment variables from .env file
 require('dotenv').config();
+
+const PORT = process.env.PORT || 3000;
+const app = express();
 
 // Create MySQL connection pool
 const pool = mysql.createPool({
@@ -50,27 +49,31 @@ app.get('/type', (req, res) => {
 
 // Endpoint to retrieve jokes by type
 app.get('/joke', (req, res) => {
-    // Extract the type and count parameters from the request query
-    const { type, count } = req.query;
+  // Extract the type and count parameters from the request query
+  const { type, count } = req.query;
   
-    // Construct the SQL query based on the provided parameters
-    let query = 'SELECT setup, punchline FROM jokes';
-    const values = [];
+  // Construct the SQL query based on the provided parameters
+  let query = 'SELECT setup, punchline FROM jokes';
+  const values = [];
   
-    if (type) {
-      query += ' JOIN joke_types ON jokes.type_id = joke_types.id WHERE joke_types.type = ?';
-      values.push(type);
-    }
+  if (type) {
+    query += ' JOIN joke_types ON jokes.type_id = joke_types.id WHERE joke_types.type = ?';
+    values.push(type);
+  }
   
-    if (count) {
+  if (count) {
+    if (type){
       query += ' ORDER BY RAND() LIMIT ?';
-      values.push(parseInt(count));
     } else {
       query += ' ORDER BY RAND() LIMIT 1';
     }
+    values.push(parseInt(count));
+  } else {
+    query += ' ORDER BY RAND() LIMIT 1';
+  }
   
     // Execute the query
-    pool.query(query, values, (error, results) => {
+  pool.query(query, values, (error, results) => {
       if (error) {
         console.error('Error fetching jokes:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -78,7 +81,7 @@ app.get('/joke', (req, res) => {
       }
       // Send the jokes as a JSON response
       res.json(results);
-    });
+  });
 });
 
 // start and listen the server
