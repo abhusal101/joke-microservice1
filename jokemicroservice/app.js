@@ -31,6 +31,8 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+//TODO Later
+//Look into week6 demo for creating separate functions for db endpoints using async and promise
 // Endpoint to retrieve joke types from the database
 app.get('/type', (req, res) => {
     // Query the database to fetch all joke types

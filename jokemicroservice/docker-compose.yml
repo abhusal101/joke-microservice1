@@ -15,10 +15,24 @@ services:
 
   nodeapp:
     build: .
-    container_name: joke_application
+    container_name: jokeapplication_container
     ports:
       - "3000:3000"
     depends_on:
+      - mysqldb
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_container
+    ports:
+      - "5672:5672"  # RabbitMQ default port
+      - "15672:15672"  # RabbitMQ management plugin port
+
+  etl:
+    build: ./etl
+    container_name: etl_container
+    depends_on:
+      - rabbitmq
       - mysqldb
 
 volumes:
